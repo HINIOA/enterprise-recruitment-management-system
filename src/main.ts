@@ -1,12 +1,30 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
-import store from './store'
-import { ElCarousel, ElCarouselItem } from 'element-plus';
+import { createApp } from "vue";
+import App from "./App.vue";
+import router from "./router";
+import store from "./store";
+import './app.scss'
+import 'element-plus/lib/theme-chalk/index.css';
+import {
+  ElContainer,
+  ElHeader,
+  ElMain,
+  ElMenu,
+  ElMenuItem,
+} from "element-plus";
 
-const app = createApp(App)
+const app = createApp(App);
 
-app.component(ElCarousel.name, ElCarousel)
-app.component(ElCarouselItem.name, ElCarouselItem)
+const elComps = [
+  ElContainer,
+  ElHeader,
+  ElMain,
+  ElMenu,
+  ElMenuItem,
+]
 
-app.use(store).use(router).mount('#app')
+elComps.forEach(comp => app.component(comp.name, comp))
+
+app
+  .use(store)
+  .use(router)
+  .mount("#app");
