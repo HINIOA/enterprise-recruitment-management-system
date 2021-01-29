@@ -1,31 +1,77 @@
 <template>
-  <div id="nav">
-    <router-link to="/">首页</router-link> |
-    <router-link to="/post">开放职位</router-link> ｜
-    <router-link to="/about">关于</router-link>
-  </div>
-  <router-view/>
+  <el-container>
+    <el-header>
+      <!-- Logo -->
+      <div class="logo-container">
+        <a href="#" class="logo-link">
+          <img src="./assets/logo.png" alt="logo" class="logo-image" />
+        </a>
+      </div>
+      <!-- 导航 -->
+      <el-menu :default-active="activeIndex" @select="navClickHandler" mode="horizontal">
+        <el-menu-item index="home">
+          首页
+        </el-menu-item>
+        <el-menu-item index="jobList">
+          开放职位
+        </el-menu-item>
+      </el-menu>
+    </el-header>
+    <el-main>
+      <router-view />
+    </el-main>
+  </el-container>
 </template>
 
+<script lang="ts">
+import { defineComponent, ref } from "vue";
+import { useRouter } from 'vue-router';
+
+export default defineComponent({
+  setup() {
+    const activeIndex = ref('home');
+    const router = useRouter()
+
+    const navClickHandler = (index: string) => {
+      router.push({name: index})
+    }
+
+    return {
+      activeIndex,
+      navClickHandler,
+    };
+  },
+});
+</script>
+
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+.el-header {
+  padding: 0 !important;
+  display: flex;
 }
 
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+.logo {
+  &-container {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    height: 100%;
+    padding-left: 2rem;
+    padding-right: 4rem;
+    border-bottom: 1px solid #e6e6e6;
   }
+
+  &-link {
+    display: flex;
+  }
+
+  &-image {
+    height: 3rem;
+    min-width: 3rem;
+  }
+}
+
+.el-menu {
+  flex: 1;
 }
 </style>
