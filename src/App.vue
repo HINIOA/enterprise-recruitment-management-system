@@ -13,7 +13,7 @@
           首页
         </el-menu-item>
         <el-menu-item index="jobList">
-          开放职位
+          所有职位
         </el-menu-item>
       </el-menu>
     </el-header>
