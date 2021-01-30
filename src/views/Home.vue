@@ -13,39 +13,58 @@
         <el-button type="primary">搜索职位</el-button>
       </div>
       <div class="list">
-        <el-row v-for="item in 4" :key="item" :gutter="10">
-          <el-col v-for="item in 3" :key="item" :span="8">
+        <el-row v-for="(row, idx) in jobListRows" :key="idx" :gutter="10">
+          <el-col v-for="item in row" :key="item" :span="8">
             <div class="item">
               <router-link to="/job-apply" class="link">
-                <p class="name">前端开发工程师</p>
-                <p class="info">研发类 | 广东·深圳市</p>
+                <p class="name">{{ item.name }}</p>
+                <p class="info">{{ item.info }}</p>
               </router-link>
             </div>
           </el-col>
         </el-row>
       </div>
+      <div class="more">
+        <el-button type="primary" @click="routeToJobList">查看更多职位</el-button>
+      </div>
     </title-card>
     <!-- 关于 -->
-    <title-card title="关于" class="about">
+    <title-card title="关于 Shopee" class="about">
       <div class="about-container">
-        <p class="about-text">
-          Shopee是东南亚领航电商平台，覆盖新加坡、马来西亚、菲律宾、印度尼西亚、泰国和越南等市场。同时在中国深圳、上海和香港设立跨境业务办公室。2019
-          年 Shopee总订单量高达12亿，同比增长100.5%。根据权威移动数据分析平台
-          App
-          Annie，2019年Shopee强势跻身全球购物类App下载量前五，同时斩获东南亚及台湾市场购物类App年度总下载量、平均月活数、安卓使用总时长三项冠军，并领跑东南亚两大头部市场，拿下印尼及越南年度购物类App下载量与月活数双冠王。
-        </p>
-        <p class="about-text"><br></p>
-        <p class="about-text">
-          Shopee母公司Sea为首间于纽交所上市的东南亚互联网企业(股票代码:SE)。除Shopee外，其核心业务还包括旗下的电子娱乐业务Garena及数字金融服务业务SeaMoney。Sea集团的理念为运用科技的力量改善当地消费者及中小企业的生活。
-        </p>
+        <p class="about-text">{{ aboutText }}</p>
       </div>
     </title-card>
   </div>
 </template>
 
 <script lang="ts">
-import BaseTitleCard from "@/components/BaseTitleCard.vue";
 import { defineComponent, ref } from "vue";
+import { useRouter } from 'vue-router';
+import BaseTitleCard from "@/components/BaseTitleCard.vue";
+
+function getJobListRows() {
+  const data = [
+    { name: "前端开发工程师", info: "研发类 | 广东·深圳市" },
+    { name: "前端开发工程师", info: "研发类 | 广东·深圳市" },
+    { name: "前端开发工程师", info: "研发类 | 广东·深圳市" },
+    { name: "前端开发工程师", info: "研发类 | 广东·深圳市" },
+    { name: "前端开发工程师", info: "研发类 | 广东·深圳市" },
+    { name: "前端开发工程师", info: "研发类 | 广东·深圳市" },
+    { name: "前端开发工程师", info: "研发类 | 广东·深圳市" },
+    { name: "前端开发工程师", info: "研发类 | 广东·深圳市" },
+    { name: "前端开发工程师", info: "研发类 | 广东·深圳市" },
+    { name: "前端开发工程师", info: "研发类 | 广东·深圳市" },
+    { name: "前端开发工程师", info: "研发类 | 广东·深圳市" },
+    { name: "前端开发工程师", info: "研发类 | 广东·深圳市" },
+  ]
+  const jobListRows = []
+
+  for (let i = 0; i + 2 < data.length; i+=3) {
+    jobListRows.push([data[i], data[i + 1], data[i + 2]])
+  }
+
+  return ref(jobListRows)
+}
 
 export default defineComponent({
   name: "Home",
@@ -54,13 +73,25 @@ export default defineComponent({
   },
   setup() {
     const bannerUrls = ref([
-      "https://lark-assets-prod-aliyun.oss-cn-hangzhou.aliyuncs.com/yuque/0/2021/jpeg/622241/1611970498818-resources/10998040/jpg/b71e0278-895f-4c7b-be8f-d2058b088696.jpeg?OSSAccessKeyId=LTAI4GGhPJmQ4HWCmhDAn4F5&Expires=1611972302&Signature=9XjoUIgMfYSWWGk2h88pbSHUaXE%3D",
-      "https://lark-assets-prod-aliyun.oss-cn-hangzhou.aliyuncs.com/yuque/0/2021/jpeg/622241/1611969742090-resources/10998040/jpg/321f4ecb-49fd-4213-92db-8036e9481381.jpeg?OSSAccessKeyId=LTAI4GGhPJmQ4HWCmhDAn4F5&Expires=1611971546&Signature=VwlTTQCaAk1WBG%2BD7SpS%2FFNC25c%3D",
-      "https://lark-assets-prod-aliyun.oss-cn-hangzhou.aliyuncs.com/yuque/0/2021/jpeg/622241/1611970311330-resources/10998040/jpg/1517e143-529e-412d-a9f3-cdcbf1ae9f73.jpeg?OSSAccessKeyId=LTAI4GGhPJmQ4HWCmhDAn4F5&Expires=1611972137&Signature=ZT6hKD4TaSZL%2BJA2pm8bjCWc%2B5U%3D",
+      "https://img.imgdb.cn/item/601503083ffa7d37b3cca9b5.jpg",
+      "https://img.imgdb.cn/item/601503083ffa7d37b3cca9b7.jpg",
+      "https://img.imgdb.cn/item/601502bd3ffa7d37b3cc930f.jpg",
     ]);
+    const jobListRows = getJobListRows()
+    const aboutText = 'Shopee是东南亚领航电商平台，覆盖新加坡、马来西亚、菲律宾、印度尼西亚、泰国和越南等市场。同时在中国深圳、上海和香港设立跨境业务办公室。2019年 Shopee总订单量高达12亿，同比增长100.5%。根据权威移动数据分析平台 App Annie，2019年Shopee强势跻身全球购物类App下载量前五，同时斩获东南亚及台湾市场购物类App年度总下载量、平均月活数、安卓使用总时长三项冠军，并领跑东南亚两大头部市场，拿下印尼及越南年度购物类App下载量与月活数双冠王。'
+    const searchInput = ref('')
+
+    const router = useRouter()
+    const routeToJobList = () => {
+      router.push('/jobs')
+    }
 
     return {
       bannerUrls,
+      searchInput,
+      jobListRows,
+      aboutText,
+      routeToJobList,
     };
   },
 });
@@ -123,6 +154,11 @@ export default defineComponent({
         }
       }
     }
+  }
+
+  .more {
+    display: flex;
+    justify-content: center;
   }
 }
 
