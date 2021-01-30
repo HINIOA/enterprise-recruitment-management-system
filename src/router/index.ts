@@ -2,7 +2,6 @@ import {
   createRouter,
   createWebHistory,
   RouteRecordRaw,
-  RouterScrollBehavior,
 } from "vue-router";
 import Home from "../views/Home.vue";
 
