@@ -10,6 +10,13 @@ import {
   ElMain,
   ElMenu,
   ElMenuItem,
+  ElCarousel,
+  ElCarouselItem,
+  ElInput,
+  ElButton,
+  ElRow,
+  ElCol,
+  ElFooter,
 } from "element-plus";
 
 const app = createApp(App);
@@ -18,8 +25,15 @@ const elComps = [
   ElContainer,
   ElHeader,
   ElMain,
+  ElFooter,
   ElMenu,
   ElMenuItem,
+  ElCarousel,
+  ElCarouselItem,
+  ElInput,
+  ElButton,
+  ElRow,
+  ElCol,
 ]
 
 elComps.forEach(comp => app.component(comp.name, comp))
