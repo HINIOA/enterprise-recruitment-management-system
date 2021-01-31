@@ -8,6 +8,7 @@ import {
   ElContainer,
   ElHeader,
   ElMain,
+  ElFooter,
   ElMenu,
   ElMenuItem,
   ElCard,
@@ -18,7 +19,14 @@ import {
   ElButton,
   ElRow,
   ElCol,
-  ElFooter,
+  ElDialog,
+  ElForm,
+  ElFormItem,
+  ElSelect,
+  ElOption,
+  ElUpload,
+  ElRadio,
+  ElRadioGroup,
 } from "element-plus";
 
 const app = createApp(App);
@@ -38,6 +46,14 @@ const elComps = [
   ElCarouselItem,
   ElRow,
   ElCol,
+  ElDialog,
+  ElForm,
+  ElFormItem,
+  ElSelect,
+  ElOption,
+  ElUpload,
+  ElRadioGroup,
+  ElRadio,
 ]
 
 elComps.forEach(comp => app.component(comp.name, comp))
