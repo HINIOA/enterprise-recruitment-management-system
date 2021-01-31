@@ -17,7 +17,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/JobList.vue"),
   },
   {
-    path: "/job-detail",
+    path: "/job-detail/:id",
     name: "jobDetail",
     component: () => import("../views/JobDetail.vue"),
   },
@@ -25,6 +25,9 @@ const routes: Array<RouteRecordRaw> = [
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
+  scrollBehavior() {
+    return { top: 0 }
+  },
   routes,
 });
 

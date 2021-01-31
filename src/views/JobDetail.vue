@@ -32,9 +32,11 @@
 import { defineComponent, ref } from "vue";
 import { ElMessage } from "element-plus";
 import JobApplyDialog from "@/components/JobApplyDialog.vue";
+import { useRoute } from 'vue-router';
 
 // 从后端获取岗位职责文本并处理
-function getJobData() {
+function getJobData(jobId: string | string[]) {
+  console.log(jobId);
   const data = {
     name: "前端开发工程师",
     company: "深圳虾皮信息科技有限公司",
@@ -64,7 +66,9 @@ export default defineComponent({
     JobApplyDialog,
   },
   setup() {
-    const { jobInfo, jobDuties } = getJobData();
+    const route = useRoute()
+    const jobId = route.params.id
+    const { jobInfo, jobDuties } = getJobData(jobId);
     const dialogVisible = ref(false);
 
     const submitForm = () => {
