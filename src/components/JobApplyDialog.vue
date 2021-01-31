@@ -5,6 +5,7 @@
     custom-class="job-apply"
     top="10vh"
     center
+    :close-on-click-modal="false"
   >
     <div class="job-apply__info">
       <p class="job-apply__info-company">{{ jobInfo.company }}</p>
@@ -88,14 +89,13 @@
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="visible = false">取 消</el-button>
+        <el-button @click="visible=false">取 消</el-button>
         <el-button
           type="primary"
           @click="submitForm"
           :disabled="isSubmiting"
           :loading="isSubmiting"
-          >{{ isSubmiting ? "提交中" : "提 交" }}</el-button
-        >
+        >{{ isSubmiting ? "提交中" : "提 交" }}</el-button>
       </span>
     </template>
   </el-dialog>
@@ -116,9 +116,14 @@ export default defineComponent({
       require: true,
     },
   },
-  emits: ['submit'],
+  emits: ['cancel','submit'],
   setup(props, ctx) {
-    const visible = computed(() => props.dialogVisible);
+    const visible = computed({
+      get: () => props.dialogVisible,
+      set: val => {
+        if (!val) ctx.emit('cancel')
+      }
+    });
     const form = ref({
       name: "",
       phone: "",
@@ -147,7 +152,6 @@ export default defineComponent({
       (formEl.value! as {
         validate(cb: (valid: boolean) => void): void;
       }).validate((valid) => {
-        console.log(valid);
         if (valid) {
           isSubmiting.value = true;
           setTimeout(() => {
@@ -220,6 +224,14 @@ export default defineComponent({
 
   &__form {
     padding: 2rem;
+
+    .el-select {
+      width: 100%;
+    }
+
+    .el-radio-group {
+      vertical-align: auto;
+    }
 
     &-upload {
       width: 100%;

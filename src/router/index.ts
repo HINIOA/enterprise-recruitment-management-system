@@ -21,11 +21,6 @@ const routes: Array<RouteRecordRaw> = [
     name: "jobDetail",
     component: () => import("../views/JobDetail.vue"),
   },
-  {
-    path: "/job-apply",
-    name: "jobApply",
-    component: () => import("../views/JobApply.vue"),
-  },
 ];
 
 const router = createRouter({
