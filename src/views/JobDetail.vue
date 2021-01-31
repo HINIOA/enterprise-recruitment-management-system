@@ -1,11 +1,11 @@
 <template>
   <el-card class="job-detail__container">
     <div class="job-detail__header">
-      <p class="job-detail__time">发布时间：{{jobInfo.time}}</p>
-      <p class="job-detail__name">{{jobInfo.name}}</p>
-      <p class="job-detail__info">{{jobInfo.types.join('｜')}}</p>
-      <p class="job-detail__location">{{jobInfo.location}}</p>
-      <el-button type="primary" size="medium" @click="dialogVisible=true">申请职位</el-button>
+      <p class="job-detail__time">发布时间：{{ jobInfo.time }}</p>
+      <p class="job-detail__name">{{ jobInfo.name }}</p>
+      <p class="job-detail__info">{{ jobInfo.types.join("｜") }}</p>
+      <p class="job-detail__location">{{ jobInfo.location }}</p>
+      <el-button type="primary" size="medium" @click="dialogVisible = true">申请职位</el-button>
     </div>
     <div class="job-detail__main">
       <div class="job-detail__desc-title">
@@ -17,34 +17,34 @@
       </p>
     </div>
     <div class="job-detail__footer">
-      <el-button type="primary" @click="dialogVisible=true">申请职位</el-button>
+      <el-button type="primary" @click="dialogVisible = true">申请职位</el-button>
     </div>
   </el-card>
-  <job-apply-dialog :dialog-visible="dialogVisible"
-  :job-info="jobInfo"
-  @submit="submitForm"></job-apply-dialog>
+  <job-apply-dialog
+    :job-info="jobInfo"
+    :dialog-visible="dialogVisible"
+    @cancel="dialogVisible=false"
+    @submit="submitForm"
+  ></job-apply-dialog>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { ElMessage } from 'element-plus'
-import JobApplyDialog from '@/components/JobApplyDialog.vue';
+import { ElMessage } from "element-plus";
+import JobApplyDialog from "@/components/JobApplyDialog.vue";
 
 // 从后端获取岗位职责文本并处理
 function getJobData() {
   const data = {
-    name: '前端开发工程师',
-    company: '深圳虾皮信息科技有限公司',
-    types: [
-      '全职',
-      '研发类'
-    ],
-    location: '广东·深圳市',
-    time: '2021-01-31',
-    jobDutiesText: "Role and Responsibilitiesz|负责东南亚、台湾地区等市场领先的O2O平台体系搭建，参与核心业务产品前端研发；|参与亿级用户量的C端业务产品研发，具体产品形态跟随业务发展和市场需求不停的增加，目前有虚拟商品交易平台、信息流平台、直播平台、社交广告平台、社交类和营销类H5游戏、智能化客服服务系统。当前着重发展O2O相关业务；|当前业务群项目都需要在高性能、高并发、高可用的场景下，实现最优质的用户交互体验的同时，实现快速动态扩容和灾备机制。 |\n|Qualifications and Education Requirements|计算机相关专业；|本科及以上。|\n|Preferred Skills|全日制本科及以上学历，良好的英文文档读写能力；|扎实的计算机科学相关基础知识；|良好的算法思维；|熟悉前端开发基础技术(HTML/JS/CSS)，并且对新特性有一定掌握；|熟悉前端项目构建流程，依赖管理和模块加载相关原理；|熟悉React或Vue，并有一定的实践经验。|\n|Additional Notes|对Web后端开发有一定了解，熟悉Python/Golang/Node其中之一；|有ReactNative或者Flutter项目经验；|有移动端开发和适配相关经验。"
-  }
+    name: "前端开发工程师",
+    company: "深圳虾皮信息科技有限公司",
+    types: ["全职", "研发类"],
+    location: "广东·深圳市",
+    time: "2021-01-31",
+    jobDutiesText:
+      "Role and Responsibilitiesz|负责东南亚、台湾地区等市场领先的O2O平台体系搭建，参与核心业务产品前端研发；|参与亿级用户量的C端业务产品研发，具体产品形态跟随业务发展和市场需求不停的增加，目前有虚拟商品交易平台、信息流平台、直播平台、社交广告平台、社交类和营销类H5游戏、智能化客服服务系统。当前着重发展O2O相关业务；|当前业务群项目都需要在高性能、高并发、高可用的场景下，实现最优质的用户交互体验的同时，实现快速动态扩容和灾备机制。 |\n|Qualifications and Education Requirements|计算机相关专业；|本科及以上。|\n|Preferred Skills|全日制本科及以上学历，良好的英文文档读写能力；|扎实的计算机科学相关基础知识；|良好的算法思维；|熟悉前端开发基础技术(HTML/JS/CSS)，并且对新特性有一定掌握；|熟悉前端项目构建流程，依赖管理和模块加载相关原理；|熟悉React或Vue，并有一定的实践经验。|\n|Additional Notes|对Web后端开发有一定了解，熟悉Python/Golang/Node其中之一；|有ReactNative或者Flutter项目经验；|有移动端开发和适配相关经验。",
+  };
   const { name, company, types, location, time, jobDutiesText } = data
-  
 
   return {
     jobInfo: ref({
@@ -54,23 +54,23 @@ function getJobData() {
       location,
       time,
     }),
-    jobDuties: ref(jobDutiesText.split("|"))
+    jobDuties: ref(jobDutiesText.split("|")),
   };
 }
 
 export default defineComponent({
   name: "JobDetail",
   components: {
-    JobApplyDialog
+    JobApplyDialog,
   },
   setup() {
-    const { jobInfo, jobDuties} = getJobData();
-    const dialogVisible = ref(true);
+    const { jobInfo, jobDuties } = getJobData();
+    const dialogVisible = ref(false);
 
     const submitForm = () => {
-        dialogVisible.value = false
-        ElMessage.success('提交成功')
-    }
+      dialogVisible.value = false;
+      ElMessage.success("提交成功");
+    };
 
     return {
       jobInfo,
