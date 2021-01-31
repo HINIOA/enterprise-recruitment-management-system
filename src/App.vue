@@ -35,17 +35,26 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-import { useRouter } from "vue-router";
+import { defineComponent, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 export default defineComponent({
   setup() {
     const activeIndex = ref("home");
     const router = useRouter();
+    const route = useRoute();
 
     const navClickHandler = (index: string) => {
       router.push({ name: index });
     };
+
+    watch(
+      () => route.name,
+      (routeName) => {
+        if (typeof routeName === "string")
+          activeIndex.value = routeName === "jobDetail" ? "jobList" : routeName;
+      }
+    );
 
     return {
       activeIndex,
@@ -60,10 +69,10 @@ export default defineComponent({
   border-bottom: 1px solid #e6e6e6;
 
   &__container {
-  width: 100vw;
-  max-width: 75rem;
-  display: flex;
-  margin: 0 auto;
+    width: 100vw;
+    max-width: 75rem;
+    display: flex;
+    margin: 0 auto;
   }
 }
 
