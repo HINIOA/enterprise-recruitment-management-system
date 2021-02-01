@@ -2,11 +2,11 @@
   <div class="job-list__container">
     <el-card class="job-list__filter">
       <p class="job-list__filter-title">职位筛选</p>
-      <base-search
+      <search
         placeholder="输入职位关键字"
         buttonText="搜索职位"
-        @search="searchHandler"
-      ></base-search>
+        @search="handleSearch"
+      ></search>
     </el-card>
     <el-card class="job-list__content">
       <div class="job-list__item" v-for="job in jobList" :key="job.id" @click="toJobDetail(job.id)">
@@ -33,7 +33,7 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { useRouter } from 'vue-router';
-import BaseSearch from "../components/BaseSearch.vue";
+import Search from "../components/BaseSearch.vue";
 
 function getData() {
   const data = {
@@ -60,13 +60,13 @@ function getData() {
 export default defineComponent({
   name: "JobList",
   components: {
-    baseSearch: BaseSearch,
+    Search,
   },
   setup() {
     const router = useRouter()
     const { jobList, page } = getData()
 
-    const searchHandler = (input: string) => {
+    const handleSearch = (input: string) => {
       console.log(input);
     };
 
@@ -77,7 +77,7 @@ export default defineComponent({
     return {
       jobList,
       page,
-      searchHandler,
+      handleSearch,
       toJobDetail,
     };
   },

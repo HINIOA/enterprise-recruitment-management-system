@@ -9,10 +9,12 @@
     <!-- 开放职位 -->
     <div class="jobs">
       <title-card title="开放职位" class="jobs__container">
-      <div class="jobs__search">
-        <el-input v-model="searchInput" placeholder="请输入职位关键字" />
-        <el-button type="primary" @click="searchJob">搜索职位</el-button>
-      </div>
+      <search
+        placeholder="输入职位关键字"
+        buttonText="搜索职位"
+        class="jobs__search"
+        @search="handleSearch"
+      ></search>
       <div class="jobs__content">
         <el-row v-for="(row, idx) in jobListRows" :key="idx" :gutter="10">
           <el-col v-for="item in row" :key="item" :span="8">
@@ -43,7 +45,8 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
-import BaseTitleCard from "@/components/BaseTitleCard.vue";
+import TitleCard from "@/components/BaseTitleCard.vue";
+import Search from '@/components/BaseSearch.vue';
 
 function getJobListRows() {
   const data = [
@@ -72,7 +75,8 @@ function getJobListRows() {
 export default defineComponent({
   name: "Home",
   components: {
-    TitleCard: BaseTitleCard,
+    TitleCard,
+    Search,
   },
   setup() {
     const bannerUrls = ref([
@@ -90,7 +94,7 @@ export default defineComponent({
       router.push("/jobs");
     };
 
-    const searchJob = () => {
+    const handleSearch = () => {
       routeToJobList()
     }
 
@@ -100,7 +104,7 @@ export default defineComponent({
       jobListRows,
       aboutText,
       routeToJobList,
-      searchJob,
+      handleSearch,
     };
   },
 });
@@ -120,19 +124,7 @@ export default defineComponent({
   }
 
   &__search {
-    display: flex;
     width: 50%;
-    margin: 0 auto;
-
-    .el-input {
-      border-top-right-radius: 0;
-      border-bottom-right-radius: 0;
-    }
-
-    .el-button {
-      border-top-left-radius: 0;
-      border-bottom-left-radius: 0;
-    }
   }
 
   &__content {
