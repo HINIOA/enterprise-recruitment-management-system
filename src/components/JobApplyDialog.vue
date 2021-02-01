@@ -24,9 +24,13 @@
       <div class="job-apply__form">
         <el-form-item label="上传简历" prop="resume">
           <el-upload
-            class="job-apply__form-upload"
-            action="https://jsonplaceholder.typicode.com/posts/"
             drag
+            class="job-apply__form-upload"
+            action="/api"
+            ref="uploadEl"
+            :on-change="handleChange"
+            :on-success="handleUploadSuccess"
+            :auto-upload="false"
           >
             <i class="el-icon-upload"></i>
             <div class="el-upload__text">
@@ -47,7 +51,7 @@
           </div>
           <div class="col">
             <el-form-item label="手机号码" prop="phone">
-              <el-input v-model="form.phone"></el-input>
+              <el-input v-model.number="form.phone"></el-input>
             </el-form-item>
           </div>
         </div>
@@ -89,20 +93,43 @@
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="visible=false">取 消</el-button>
+        <el-button @click="visible = false">取 消</el-button>
         <el-button
           type="primary"
           @click="submitForm"
           :disabled="isSubmiting"
           :loading="isSubmiting"
-        >{{ isSubmiting ? "提交中" : "提 交" }}</el-button>
+          >{{ isSubmiting ? "提交中" : "提 交" }}</el-button
+        >
       </span>
     </template>
   </el-dialog>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent, Ref, ref } from "vue";
+
+function checkPhone(rule: any, val: number | string, cb: Function) {
+  if (typeof val === "string") {
+    cb(new Error("请输入您的手机号码"));
+  } else if (val.toString().length !== 11) {
+    cb(new Error("手机号必须为 11 位"));
+  } else {
+    cb();
+  }
+}
+
+function checkEmail(rule: any, val: string, cb: Function) {
+  const reg = /^[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*@[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*\.[a-z]{2,}$/;
+
+  if (val === "") {
+    cb(new Error("请输入您的邮箱"));
+  } else if (!reg.test(val)) {
+    cb(new Error("请输入正确的邮箱地址"));
+  } else {
+    cb();
+  }
+}
 
 export default defineComponent({
   name: "JobApplyDialog",
@@ -116,15 +143,17 @@ export default defineComponent({
       require: true,
     },
   },
-  emits: ['cancel','submit'],
+  emits: ["cancel", "submit"],
   setup(props, ctx) {
+    // TODO: 使用 toRefs
     const visible = computed({
       get: () => props.dialogVisible,
-      set: val => {
-        if (!val) ctx.emit('cancel')
-      }
+      set: (val) => {
+        if (!val) ctx.emit("cancel");
+      },
     });
     const form = ref({
+      resume: {},
       name: "",
       phone: "",
       email: "",
@@ -135,29 +164,36 @@ export default defineComponent({
     const rules = {
       resume: [{ required: true, message: "请上传您的简历", trigger: "blur" }],
       name: [{ required: true, message: "请输入您的姓名", trigger: "blur" }],
-      phone: [
-        {
-          type: "number",
-          required: true,
-          message: "请输入您的手机号码",
-          trigger: "blur",
-        },
-      ],
-      email: [{ required: true, message: "请输入您的邮箱", trigger: "blur" }],
+      phone: [{type: "number",required: true,validator: checkPhone,trigger: "blur"}],
+      email: [{ required: true, validator: checkEmail, trigger: "blur" }],
     };
     const formEl = ref(null);
+    const uploadEl = ref(null)
     const isSubmiting = ref(false);
 
+    const handleChange = <T extends object>(file: T) => {
+      form.value.resume = file
+    }
+
+    // 简历上传成功后，派发 submit 事件
+    const handleUploadSuccess = () => {
+      setTimeout(() => {
+        isSubmiting.value = false;
+        ctx.emit("submit", form.value);
+      }, 1000);
+    }
+
     const submitForm = () => {
+      console.log(form.value);
       (formEl.value! as {
         validate(cb: (valid: boolean) => void): void;
       }).validate((valid) => {
         if (valid) {
           isSubmiting.value = true;
-          setTimeout(() => {
-            isSubmiting.value = false;
-            ctx.emit("submit", form);
-          }, 1000);
+          // 上传简历
+          (uploadEl.value! as {
+            submit: () => void;
+          }).submit()
         } else {
           return false;
         }
@@ -169,8 +205,11 @@ export default defineComponent({
       form,
       rules,
       formEl,
+      uploadEl,
       isSubmiting,
       submitForm,
+      handleChange,
+      handleUploadSuccess,
     };
   },
 });
