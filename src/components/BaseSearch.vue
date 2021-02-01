@@ -41,11 +41,13 @@ export default defineComponent({
 .search {
   display: flex;
   margin: 0 auto;
-  .el-input {
+
+  input {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
   }
-  .el-button {
+
+.el-button {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
   }
