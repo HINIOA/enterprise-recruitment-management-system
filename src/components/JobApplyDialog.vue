@@ -107,7 +107,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, Ref, ref } from "vue";
+import { computed, defineComponent, ref } from "vue";
 
 function checkPhone(rule: any, val: number | string, cb: Function) {
   if (typeof val === "string") {
