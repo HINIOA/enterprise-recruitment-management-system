@@ -9,30 +9,37 @@
     <!-- 开放职位 -->
     <div class="jobs">
       <title-card title="开放职位" class="jobs__container">
-      <search
-        placeholder="输入职位关键字"
-        buttonText="搜索职位"
-        class="jobs__search"
-        @search="handleSearch"
-      ></search>
-      <div class="jobs__content">
-        <el-row v-for="(row, idx) in jobListRows" :key="idx" :gutter="10">
-          <el-col v-for="item in row" :key="item" :span="8">
-            <div class="jobs__item">
-              <router-link :to="/job-detail/ + item.id" class="jobs__item-link">
-                <p class="jobs__item-name">{{ item.name }}</p>
-                <p class="jobs__item-info">{{ item.info }}</p>
-              </router-link>
-            </div>
-          </el-col>
-        </el-row>
-      </div>
-      <div class="jobs__more">
-        <el-button type="primary" @click="routeToJobList">查看更多职位</el-button>
-      </div>
-    </title-card>
+        <search
+          placeholder="输入职位关键字"
+          buttonText="搜索职位"
+          class="jobs__search"
+          @search="handleSearch"
+        ></search>
+        <div class="jobs__content">
+          <el-row v-for="(row, idx) in jobListRows" :key="idx" :gutter="10">
+            <el-col v-for="item in row" :key="item" :span="8">
+              <div class="jobs__item">
+                <router-link
+                  :to="/job-detail/ + item.id"
+                  class="jobs__item-link"
+                >
+                  <p class="jobs__item-name">{{ item.name }}</p>
+                  <p class="jobs__item-info">
+                    {{ `${item.types.join("·")}｜${item.location}` }}
+                  </p>
+                </router-link>
+              </div>
+            </el-col>
+          </el-row>
+        </div>
+        <div class="jobs__more">
+          <el-button type="primary" @click="routeToJobList"
+            >查看更多职位</el-button
+          >
+        </div>
+      </title-card>
     </div>
-    
+
     <!-- 关于 -->
     <title-card title="关于 Shopee" class="about">
       <div class="about-container">
@@ -43,33 +50,21 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import TitleCard from "@/components/BaseTitleCard.vue";
-import Search from '@/components/BaseSearch.vue';
+import Search from "@/components/BaseSearch.vue";
+import { queryJobs } from "../api/jobs";
 
-function getJobListRows() {
-  const data = [
-    { id: "1", name: "前端开发工程师", info: "研发类 | 广东·深圳市" },
-    { id: "2", name: "前端开发工程师", info: "研发类 | 广东·深圳市" },
-    { id: "3", name: "前端开发工程师", info: "研发类 | 广东·深圳市" },
-    { id: "4", name: "前端开发工程师", info: "研发类 | 广东·深圳市" },
-    { id: "5", name: "前端开发工程师", info: "研发类 | 广东·深圳市" },
-    { id: "6", name: "前端开发工程师", info: "研发类 | 广东·深圳市" },
-    { id: "7", name: "前端开发工程师", info: "研发类 | 广东·深圳市" },
-    { id: "8", name: "前端开发工程师", info: "研发类 | 广东·深圳市" },
-    { id: "9", name: "前端开发工程师", info: "研发类 | 广东·深圳市" },
-    { id: "10", name: "前端开发工程师", info: "研发类 | 广东·深圳市" },
-    { id: "11", name: "前端开发工程师", info: "研发类 | 广东·深圳市" },
-    { id: "12", name: "前端开发工程师", info: "研发类 | 广东·深圳市" },
-  ];
+async function getJobListRows() {
+  const { data } = await queryJobs();
   const jobListRows = [];
 
-  for (let i = 0; i + 2 < data.length; i += 3) {
+  for (let i = 0; i + 2 < data.length && i < 9; i += 3) {
     jobListRows.push([data[i], data[i + 1], data[i + 2]]);
   }
 
-  return ref(jobListRows);
+  return jobListRows;
 }
 
 export default defineComponent({
@@ -84,7 +79,7 @@ export default defineComponent({
       "https://img.imgdb.cn/item/601503083ffa7d37b3cca9b7.jpg",
       "https://img.imgdb.cn/item/601502bd3ffa7d37b3cc930f.jpg",
     ]);
-    const jobListRows = getJobListRows();
+    const jobListRows = ref<any>([]);
     const aboutText =
       "Shopee是东南亚领航电商平台，覆盖新加坡、马来西亚、菲律宾、印度尼西亚、泰国和越南等市场。同时在中国深圳、上海和香港设立跨境业务办公室。2019年 Shopee总订单量高达12亿，同比增长100.5%。根据权威移动数据分析平台 App Annie，2019年Shopee强势跻身全球购物类App下载量前五，同时斩获东南亚及台湾市场购物类App年度总下载量、平均月活数、安卓使用总时长三项冠军，并领跑东南亚两大头部市场，拿下印尼及越南年度购物类App下载量与月活数双冠王。";
     const searchInput = ref("");
@@ -95,8 +90,12 @@ export default defineComponent({
     };
 
     const handleSearch = () => {
-      routeToJobList()
-    }
+      routeToJobList();
+    };
+
+    onMounted(async () => {
+      jobListRows.value = await getJobListRows();
+    });
 
     return {
       bannerUrls,

@@ -27,6 +27,7 @@ import {
   ElUpload,
   ElRadio,
   ElRadioGroup,
+  ElLoading,
 } from "element-plus";
 
 const app = createApp(App);
@@ -59,6 +60,7 @@ const elComps = [
 elComps.forEach(comp => app.component(comp.name, comp))
 
 app
+  .use(ElLoading)
   .use(store)
   .use(router)
   .mount("#app");

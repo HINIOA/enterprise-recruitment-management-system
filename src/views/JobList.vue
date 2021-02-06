@@ -8,53 +8,60 @@
         @search="handleSearch"
       ></search>
     </el-card>
-    <el-card class="job-list__content">
-      <div class="job-list__item" v-for="job in jobList" :key="job.id" @click="toJobDetail(job.id)">
-        <div class="job-list__item-container">
-          <p class="job-list__item-name">{{ job.name }}</p>
-        <p class="job-list__item-info--middle">{{ job.types.join('｜') }}</p>
-        <div class="job-list__item-info--bottom">
-          <p class="job-list__item-info--position">{{ job.position }}</p>
-          <p class="job-list__item-info--time">发布时间：{{ job.time }}</p>
+    <el-card v-loading="loading" class="job-list__content">
+      <template v-if="jobList.length > 0">
+        <div
+          class="job-list__item"
+          v-for="job in jobList"
+          :key="job.id"
+          @click="toJobDetail(job.id)"
+        >
+          <div class="job-list__item-container">
+            <p class="job-list__item-name">{{ job.name }}</p>
+            <p class="job-list__item-info--middle">
+              {{ job.types.join("｜") }}
+            </p>
+            <div class="job-list__item-info--bottom">
+              <p class="job-list__item-info--position">{{ job.location }}</p>
+              <p class="job-list__item-info--time">
+                发布时间：{{ job.c_time.split("T")[0] }}
+              </p>
+            </div>
+          </div>
         </div>
-        </div>
+      </template>
+      <div v-else class="job-list__empty-tips">
+        尚无任何相关职位
       </div>
     </el-card>
-    <div class="job-list__pagination">
+    <div v-if="jobList.length > 0" class="job-list__pagination">
       <el-pagination
         background
         layout="prev, pager, next"
-        :page-count="page.count">
+        :page-count="page.count"
+      >
       </el-pagination>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-import { useRouter } from 'vue-router';
+import { defineComponent, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 import Search from "../components/BaseSearch.vue";
+import { queryJobs } from "../api/jobs";
 
-function getData() {
-  const data = {
-    jobList: [
-      {id: '1', name: '前端开发工程师', types: ['全职','研发类'], position: '广东·深圳市', time: '2021-01-30'},
-      {id: '2', name: '前端开发工程师', types: ['全职','研发类'], position: '广东·深圳市', time: '2021-01-30'},
-      {id: '3', name: '前端开发工程师', types: ['全职','研发类'], position: '广东·深圳市', time: '2021-01-30'},
-      {id: '4', name: '前端开发工程师', types: ['全职','研发类'], position: '广东·深圳市', time: '2021-01-30'},
-      {id: '5', name: '前端开发工程师', types: ['全职','研发类'], position: '广东·深圳市', time: '2021-01-30'},
-    ],
-    page: {
-      next: 2,
-      count: 10
-    }
-  }
-  const { jobList, page } = data
+async function getData(name?: string) {
+  const { data: jobs } = await queryJobs(null, { name });
+  const page = {
+    next: 2,
+    count: jobs.length / 16,
+  };
 
   return {
-    jobList: ref(jobList),
-    page: ref(page),
-  }
+    jobs,
+    page,
+  };
 }
 
 export default defineComponent({
@@ -63,20 +70,37 @@ export default defineComponent({
     Search,
   },
   setup() {
-    const router = useRouter()
-    const { jobList, page } = getData()
+    const router = useRouter();
+    const jobList = ref([]);
+    const page = ref({});
+    const loading = ref(false);
 
-    const handleSearch = (input: string) => {
-      console.log(input);
+    const handleSearch = async (input: string) => {
+      loading.value = true;
+      const { jobs, page: __page } = await getData(input);
+
+      jobList.value = jobs;
+      page.value = __page;
+      loading.value = false;
     };
 
     const toJobDetail = (jobId: string) => {
-      router.push('/job-detail/' + jobId)
-    }
+      router.push("/job-detail/" + jobId);
+    };
+
+    onMounted(async () => {
+      loading.value = true;
+      const { jobs, page: __page } = await getData();
+
+      jobList.value = jobs;
+      page.value = __page;
+      loading.value = false;
+    });
 
     return {
       jobList,
       page,
+      loading,
       handleSearch,
       toJobDetail,
     };
@@ -118,7 +142,7 @@ export default defineComponent({
     }
 
     &:hover {
-      background-color: rgb(249,249,250);
+      background-color: rgb(249, 249, 250);
     }
 
     &-container {
@@ -163,6 +187,11 @@ export default defineComponent({
   &__pagination {
     display: flex;
     justify-content: center;
+  }
+
+  &__empty-tips {
+    padding: 1rem 0;
+    text-align: center;
   }
 }
 </style>
