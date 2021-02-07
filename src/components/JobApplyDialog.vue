@@ -22,15 +22,13 @@
     </div>
     <el-form :model="form" :rules="rules" ref="formEl" label-width="auto">
       <div class="job-apply__form">
-        <el-form-item label="上传简历" prop="resume">
+        <el-form-item label="上传简历" prop="resumeUrl">
           <el-upload
             drag
             class="job-apply__form-upload"
-            action="/api"
+            action="/api/candidate/resume/upload"
             ref="uploadEl"
             :on-change="handleChange"
-            :on-success="handleUploadSuccess"
-            :auto-upload="false"
           >
             <i class="el-icon-upload"></i>
             <div class="el-upload__text">
@@ -153,7 +151,7 @@ export default defineComponent({
       },
     });
     const form = ref({
-      resume: {},
+      resumeUrl: "",
       name: "",
       phone: "",
       email: "",
@@ -162,38 +160,35 @@ export default defineComponent({
       highestEducation: "",
     });
     const rules = {
-      resume: [{ required: true, message: "请上传您的简历", trigger: "blur" }],
+      resumeUrl: [{ required: true, message: "请上传您的简历", trigger: "blur" }],
       name: [{ required: true, message: "请输入您的姓名", trigger: "blur" }],
-      phone: [{type: "number",required: true,validator: checkPhone,trigger: "blur"}],
+      phone: [
+        {
+          type: "number",
+          required: true,
+          validator: checkPhone,
+          trigger: "blur",
+        },
+      ],
       email: [{ required: true, validator: checkEmail, trigger: "blur" }],
     };
     const formEl = ref(null);
-    const uploadEl = ref(null)
+    const uploadEl = ref(null);
     const isSubmiting = ref(false);
 
-    const handleChange = <T extends object>(file: T) => {
-      form.value.resume = file
-    }
+    const handleChange = (file: any) => {
+      const { response } = file;
 
-    // 简历上传成功后，派发 submit 事件
-    const handleUploadSuccess = () => {
-      setTimeout(() => {
-        isSubmiting.value = false;
-        ctx.emit("submit", form.value);
-      }, 1000);
-    }
+      if (response) form.value.resumeUrl = response.url;
+    };
+
 
     const submitForm = () => {
-      console.log(form.value);
       (formEl.value! as {
         validate(cb: (valid: boolean) => void): void;
       }).validate((valid) => {
         if (valid) {
-          isSubmiting.value = true;
-          // 上传简历
-          (uploadEl.value! as {
-            submit: () => void;
-          }).submit()
+          ctx.emit("submit", form.value);
         } else {
           return false;
         }
@@ -209,7 +204,6 @@ export default defineComponent({
       isSubmiting,
       submitForm,
       handleChange,
-      handleUploadSuccess,
     };
   },
 });

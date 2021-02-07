@@ -3,7 +3,9 @@
     <div class="job-detail__header">
       <p class="job-detail__time">发布时间：{{ jobInfo.time }}</p>
       <p class="job-detail__name">{{ jobInfo.name }}</p>
-      <p class="job-detail__info">{{ Array.isArray(jobInfo.types) ? jobInfo.types.join("｜") : ''}}</p>
+      <p class="job-detail__info">
+        {{ Array.isArray(jobInfo.types) ? jobInfo.types.join("｜") : "" }}
+      </p>
       <p class="job-detail__location">{{ jobInfo.location }}</p>
       <el-button type="primary" size="medium" @click="dialogVisible = true"
         >申请职位</el-button
@@ -38,10 +40,10 @@ import { ElMessage } from "element-plus";
 import JobApplyDialog from "@/components/JobApplyDialog.vue";
 import { useRoute } from "vue-router";
 import { queryJobs } from "@/api/jobs";
+import applyJob from "../api/candidate";
 
-// 从后端获取岗位职责文本并处理
 async function getJobData(id: string | string[]) {
-  const {job} = await queryJobs({ id });
+  const { job } = await queryJobs({ id });
   const { name, types, location, time, desc } = job;
 
   return {
@@ -63,17 +65,25 @@ export default defineComponent({
   },
   setup() {
     const route = useRoute();
-    const jobInfo = ref({});
+    const jobInfo = ref({
+      name: "",
+      company: "深圳虾皮信息科技有限公司",
+      types: "",
+      location: "",
+      time: "",
+    });
     const jobDuties = ref([]);
     const dialogVisible = ref(false);
 
-    const submitForm = () => {
+    const submitForm = (value: any) => {
       dialogVisible.value = false;
-      ElMessage.success("提交成功");
+      value.job = jobInfo.value.name;
+      applyJob(value).then((res) => {
+        ElMessage.success("提交成功");
+      });
     };
 
     onMounted(async () => {
-      console.log('mounted');
       const { info, desc } = await getJobData(route.params.id);
 
       jobInfo.value = info;
