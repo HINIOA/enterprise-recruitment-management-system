@@ -1,7 +1,7 @@
 <template>
   <el-card class="job-detail__container">
     <div class="job-detail__header">
-      <p class="job-detail__time">发布时间：{{ jobInfo.time }}</p>
+      <p class="job-detail__time">发布时间：{{ jobInfo.time.split('T')[0] }}</p>
       <p class="job-detail__name">{{ jobInfo.name }}</p>
       <p class="job-detail__info">
         {{ Array.isArray(jobInfo.types) ? jobInfo.types.join("｜") : "" }}
@@ -44,7 +44,7 @@ import applyJob from "../api/candidate";
 
 async function getJobData(id: string | string[]) {
   const { job } = await queryJobs({ id });
-  const { name, types, location, time, desc } = job;
+  const { name, types, location, c_time: time, desc } = job;
 
   return {
     info: {
