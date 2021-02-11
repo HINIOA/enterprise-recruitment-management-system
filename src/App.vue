@@ -21,6 +21,10 @@
             所有职位
           </el-menu-item>
         </el-menu>
+        <!-- 用户 -->
+        <div class="user" @click="clickUserHandler">
+          {{ commonState.token ? "应聘进度" : "登录" }}
+        </div>
       </div>
     </el-header>
     <el-main>
@@ -31,21 +35,41 @@
         <a href="#" class="author-text">Coded by <strong>Xinyao Qiu</strong></a>
       </div>
     </el-footer>
+    <login-dialog v-model="loginDialogVisible" />
+    <progress-dialog v-if="commonState.token" v-model="progressDialogVisible" :time="Date.now()" />
   </el-container>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import loginDialog from "./components/LoginDialog.vue";
+import progressDialog from "./components/progressDialog.vue";
+import store from "./store";
 
 export default defineComponent({
+  components: {
+    progressDialog,
+    loginDialog,
+  },
   setup() {
-    const activeIndex = ref("home");
     const router = useRouter();
     const route = useRoute();
+    const commonState = store.state;
+    const activeIndex = ref("home");
+    const loginDialogVisible = ref<boolean>(false);
+    const progressDialogVisible = ref<boolean>(false);
 
     const navClickHandler = (index: string) => {
       router.push({ name: index });
+    };
+
+    const clickUserHandler = () => {
+      if (commonState.token) {
+        progressDialogVisible.value = true;
+      } else {
+        loginDialogVisible.value = true;
+      }
     };
 
     watch(
@@ -59,6 +83,10 @@ export default defineComponent({
     return {
       activeIndex,
       navClickHandler,
+      clickUserHandler,
+      loginDialogVisible,
+      progressDialogVisible,
+      commonState,
     };
   },
 });
@@ -72,6 +100,7 @@ export default defineComponent({
     width: 100vw;
     max-width: 75rem;
     display: flex;
+    align-items: center;
     margin: 0 auto;
   }
 }
@@ -97,6 +126,12 @@ export default defineComponent({
     height: 3rem;
     min-width: 3rem;
   }
+}
+
+.user {
+  cursor: pointer;
+  color: #909399;
+  font-size: 1rem;
 }
 
 .el-menu {
