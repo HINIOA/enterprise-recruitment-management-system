@@ -1,15 +1,26 @@
 <template>
   <el-card class="job-detail__container">
     <div class="job-detail__header">
-      <p class="job-detail__time">发布时间：{{ jobInfo.time.split('T')[0] }}</p>
+      <p class="job-detail__time">发布时间：{{ jobInfo.time.split("T")[0] }}</p>
       <p class="job-detail__name">{{ jobInfo.name }}</p>
       <p class="job-detail__info">
         {{ Array.isArray(jobInfo.types) ? jobInfo.types.join("｜") : "" }}
       </p>
       <p class="job-detail__location">{{ jobInfo.location }}</p>
-      <el-button type="primary" size="medium" @click="dialogVisible = true"
-        >申请职位</el-button
+      <el-tooltip
+        :disabled="allowApply"
+        class="item"
+        effect="dark"
+        :content="commonState.isApplied ? '您的剩余投递次数为 0' : '请先登录'"
+        placement="top"
       >
+        <el-button
+          type="primary"
+          size="medium"
+          @click="dialogVisible = allowApply ? true : false"
+          >申请职位</el-button
+        >
+      </el-tooltip>
     </div>
     <div class="job-detail__main">
       <div class="job-detail__desc-title">
@@ -21,12 +32,23 @@
       </p>
     </div>
     <div class="job-detail__footer">
-      <el-button type="primary" @click="dialogVisible = true"
-        >申请职位</el-button
+      <el-tooltip
+        :disabled="allowApply"
+        class="item"
+        effect="dark"
+        :content="commonState.isApplied ? '您的剩余投递次数为 0' : '请先登录'"
+        placement="top"
       >
+        <el-button
+          type="primary"
+          @click="dialogVisible = allowApply ? true : false"
+          >申请职位</el-button
+        >
+      </el-tooltip>
     </div>
   </el-card>
   <job-apply-dialog
+    v-if="allowApply"
     :job-info="jobInfo"
     :dialog-visible="dialogVisible"
     @cancel="dialogVisible = false"
@@ -35,12 +57,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
 import JobApplyDialog from "@/components/JobApplyDialog.vue";
 import { useRoute } from "vue-router";
 import { queryJobs } from "@/api/jobs";
 import applyJob from "../api/candidate";
+import store from "@/store";
 
 async function getJobData(id: string | string[]) {
   const { job } = await queryJobs({ id });
@@ -65,6 +88,7 @@ export default defineComponent({
   },
   setup() {
     const route = useRoute();
+    const commonState = ref(store.state);
     const jobInfo = ref({
       name: "",
       company: "深圳虾皮信息科技有限公司",
@@ -74,11 +98,16 @@ export default defineComponent({
     });
     const jobDuties = ref([]);
     const dialogVisible = ref(false);
+    const allowApply = computed(
+      () => commonState.value.token && !commonState.value.isApplied
+    );
 
     const submitForm = (value: any) => {
       dialogVisible.value = false;
       value.job = jobInfo.value.name;
+      value.token = commonState.value.token;
       applyJob(value).then((res) => {
+        if (res.data.success) store.setIsApplied(true)
         ElMessage.success("提交成功");
       });
     };
@@ -91,9 +120,11 @@ export default defineComponent({
     });
 
     return {
+      commonState,
       jobInfo,
       jobDuties,
       dialogVisible,
+      allowApply,
       submitForm,
     };
   },

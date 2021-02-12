@@ -31,6 +31,7 @@ import {
   ElLink,
   ElSteps,
   ElStep,
+  ElTooltip,
 } from "element-plus";
 
 const app = createApp(App);
@@ -61,6 +62,7 @@ const elComps = [
   ElLink,
   ElSteps,
   ElStep,
+  ElTooltip,
 ]
 
 elComps.forEach(comp => app.component(comp.name, comp))

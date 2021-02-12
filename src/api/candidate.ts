@@ -11,6 +11,7 @@ type Education =
 type OptionalProps = "age" | "sex" | "highestEducation";
 
 interface RequestBody {
+  token: string;
   job: string;
   name: string;
   phone: string;
@@ -23,8 +24,9 @@ interface RequestBody {
 
 const applyJob = async (applyInfo: any) => {
   const optionalProps: OptionalProps[] = ["age", "sex", "highestEducation"];
-  const { job, name, phone, email, resumeUrl } = applyInfo;
+  const { job, name, phone, email, resumeUrl, token } = applyInfo;
   const requestBody: RequestBody = {
+    token,
     job,
     name,
     phone,
@@ -36,7 +38,7 @@ const applyJob = async (applyInfo: any) => {
     if (applyInfo[prop]) requestBody[prop] = applyInfo[prop];
   });
 
-  const response = await axios.post("/api/candidate", requestBody);
+  const response = await axios.post("/api/candidate/apply", requestBody);
 
   return response;
 };

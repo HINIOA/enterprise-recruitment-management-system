@@ -17,7 +17,7 @@
         <p class="job-apply__info-other-location">
           {{ jobInfo.location }}
         </p>
-        <p class="job-apply__info-other-time">发布时间：{{ jobInfo.time }}</p>
+        <p class="job-apply__info-other-time">发布时间：{{ jobInfo.time && jobInfo.time.split('T')[0] }}</p>
       </div>
     </div>
     <el-form :model="form" :rules="rules" ref="formEl" label-width="auto">
@@ -49,7 +49,7 @@
           </div>
           <div class="col">
             <el-form-item label="手机号码" prop="phone">
-              <el-input v-model.number="form.phone"></el-input>
+              <el-input v-model.number="form.phone" disabled></el-input>
             </el-form-item>
           </div>
         </div>
@@ -105,6 +105,7 @@
 </template>
 
 <script lang="ts">
+import store from '@/store';
 import { computed, defineComponent, ref } from "vue";
 import { checkPhone, checkEmail } from '../utils/form';
 
@@ -132,7 +133,7 @@ export default defineComponent({
     const form = ref({
       resumeUrl: "",
       name: "",
-      phone: "",
+      phone: store.state.phone,
       email: "",
       sex: "",
       age: "",
@@ -160,7 +161,6 @@ export default defineComponent({
 
       if (response) form.value.resumeUrl = response.url;
     };
-
 
     const submitForm = () => {
       (formEl.value! as {
