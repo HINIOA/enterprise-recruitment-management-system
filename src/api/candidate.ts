@@ -1,3 +1,4 @@
+import { CandidateOperation } from "@/common/constant";
 import axios from "axios";
 
 type Education =
@@ -22,7 +23,13 @@ interface RequestBody {
   highestEducation?: Education;
 }
 
-const applyJob = async (applyInfo: any) => {
+export const login = async (loginForm: any) => {
+  const res = await axios.post("/api/candidate/login", loginForm);
+
+  return res.data;
+};
+
+export const applyJob = async (applyInfo: any) => {
   const optionalProps: OptionalProps[] = ["age", "sex", "highestEducation"];
   const { job, name, phone, email, resumeUrl, token } = applyInfo;
   const requestBody: RequestBody = {
@@ -38,9 +45,27 @@ const applyJob = async (applyInfo: any) => {
     if (applyInfo[prop]) requestBody[prop] = applyInfo[prop];
   });
 
-  const response = await axios.post("/api/candidate/apply", requestBody);
+  const response = await axios.post("/api/candidate", requestBody);
 
   return response;
 };
 
-export default applyJob;
+export const getCandidate = async (token: string | null) => {
+  const res = await axios.post("/api/candidate/get-info-front", {
+    token,
+  });
+
+  return res.data;
+};
+
+export const changeStatus = async (
+  token: string | null,
+  operation: CandidateOperation
+) => {
+  const res = await axios.post("/api/candidate/change-status", {
+    token,
+    operation,
+  });
+
+  return res.data;
+};

@@ -39,7 +39,6 @@
         </div>
       </title-card>
     </div>
-
     <!-- 关于 -->
     <title-card title="关于 Shopee" class="about">
       <div class="about-container">

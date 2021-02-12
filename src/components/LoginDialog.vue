@@ -22,7 +22,11 @@
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button type="primary" @click="login" :style="{ width: '100%' }">
+        <el-button
+          type="primary"
+          @click="loginHandler"
+          :style="{ width: '100%' }"
+        >
           登 录
         </el-button>
       </span>
@@ -31,10 +35,10 @@
 </template>
 
 <script lang="ts">
-import axios from "axios";
 import { defineComponent, ref } from "vue";
 import { checkPhone } from "../utils/form";
-import store from '../store';
+import { login } from "../api/candidate";
+import store from "../store";
 
 export default defineComponent({
   props: ["modelValue"],
@@ -64,19 +68,18 @@ export default defineComponent({
     });
     const codeError = ref("");
 
-    const login = () => {
+    const loginHandler = () => {
       (loginFormRef.value! as {
         validate(cb: (valid: boolean) => void): void;
       }).validate((valid: boolean) => {
         if (valid) {
-          axios.post("/api/candidate/login", loginForm.value).then((res) => {
-            const { data } = res;
+          login(loginForm.value).then((data) => {
             const { success, token, validTime, isApplied } = data;
 
             if (success) {
-              store.setToken(token, validTime)
-              store.setPhone(loginForm.value.phone)
-              store.setIsApplied(isApplied)
+              store.setToken(token, validTime);
+              store.setPhone(loginForm.value.phone);
+              store.setIsApplied(isApplied);
               ctx.emit("update:modelValue", false);
             } else {
               codeError.value = "验证码错误";
@@ -91,7 +94,7 @@ export default defineComponent({
       loginForm,
       loginRules,
       codeError,
-      login,
+      loginHandler,
     };
   },
 });

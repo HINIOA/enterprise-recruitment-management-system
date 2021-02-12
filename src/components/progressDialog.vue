@@ -23,13 +23,22 @@
     <template #footer>
       <div class="d-flex justify-content-center">
         <template v-if="operations && operations.length > -1">
-          <el-button @click="changeStatus(0)" class="col-sm" type="primary"
+          <el-button
+            @click="changeCandidateStatus(0)"
+            class="col-sm"
+            type="primary"
             >接受</el-button
           >
-          <el-button @click="changeStatus(1)" class="col-sm" type="warning"
+          <el-button
+            @click="changeCandidateStatus(1)"
+            class="col-sm"
+            type="warning"
             >时间不合适</el-button
           >
-          <el-button @click="changeStatus(2)" class="col-sm" type="danger"
+          <el-button
+            @click="changeCandidateStatus(2)"
+            class="col-sm"
+            type="danger"
             >拒绝</el-button
           >
         </template>
@@ -46,11 +55,11 @@
 </template>
 
 <script lang="ts">
-import axios from "axios";
 import { defineComponent, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import store from "../store";
 import { CandidateOperation, Link, Status } from "../common/constant";
+import { getCandidate, changeStatus } from "../api/candidate";
 
 const STEPS = [
   { title: "待申请", status: "", desc: "" },
@@ -83,12 +92,8 @@ export default defineComponent({
     //#region 时间处理程序
     // 获取进度、状态、操作
     const queryInfoAndSet = () =>
-      axios
-        .post("/api/candidate", {
-          token: store.getToken(),
-        })
-        .then((res) => {
-          const { data } = res;
+      getCandidate(store.getToken())
+        .then((data: any) => {
           const {
             currentLink,
             status,
@@ -115,7 +120,6 @@ export default defineComponent({
           if (resOperations !== undefined) operations.value = resOperations;
         })
         .catch(() => {
-          // 未登录
           store.setToken("");
         });
 
@@ -124,19 +128,14 @@ export default defineComponent({
       if (activeStep.value === Link.NOT_APPLY) router.push("/jobs");
     };
 
-    const changeStatus = (operation: CandidateOperation) => {
-      axios
-        .post("/api/candidate/change-status", {
-          token: store.getToken(),
-          operation,
-        })
-        .then((res) => {
-          if (res.data.success) queryInfoAndSet();
+    const changeCandidateStatus = (operation: CandidateOperation) =>
+      changeStatus(store.getToken(), operation)
+        .then((data: any) => {
+          if (data.success) queryInfoAndSet();
         })
         .catch(() => {
           store.setToken("");
         });
-    };
     //#endregion
 
     queryInfoAndSet();
@@ -146,7 +145,7 @@ export default defineComponent({
       activeStep,
       operations,
       clickConfirmHandler,
-      changeStatus,
+      changeCandidateStatus,
     };
   },
 });

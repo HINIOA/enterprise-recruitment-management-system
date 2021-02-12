@@ -62,7 +62,7 @@ import { ElMessage } from "element-plus";
 import JobApplyDialog from "@/components/JobApplyDialog.vue";
 import { useRoute } from "vue-router";
 import { queryJobs } from "@/api/jobs";
-import applyJob from "../api/candidate";
+import { applyJob } from "../api/candidate";
 import store from "@/store";
 
 async function getJobData(id: string | string[]) {
@@ -106,7 +106,7 @@ export default defineComponent({
       dialogVisible.value = false;
       value.job = jobInfo.value.name;
       value.token = commonState.value.token;
-      applyJob(value).then((res) => {
+      applyJob(value).then((res: any) => {
         if (res.data.success) store.setIsApplied(true)
         ElMessage.success("提交成功");
       });
