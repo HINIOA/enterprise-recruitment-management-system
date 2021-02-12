@@ -71,10 +71,12 @@ export default defineComponent({
         if (valid) {
           axios.post("/api/candidate/login", loginForm.value).then((res) => {
             const { data } = res;
-            const { success, token, validTime } = data;
+            const { success, token, validTime, isApplied } = data;
 
             if (success) {
               store.setToken(token, validTime)
+              store.setPhone(loginForm.value.phone)
+              store.setIsApplied(isApplied)
               ctx.emit("update:modelValue", false);
             } else {
               codeError.value = "验证码错误";
