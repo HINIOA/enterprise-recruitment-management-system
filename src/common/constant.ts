@@ -25,3 +25,12 @@ export enum CandidateOperation {
   CHANGE_THE_TIME,
   REJECT,
 }
+
+export enum Education {
+  DOCTOR,
+  MASTER,
+  UNDERGRADUATE,
+  JUNIOR_COLLEGE,
+  HIGH_SCHOOL,
+  OTHER,
+}

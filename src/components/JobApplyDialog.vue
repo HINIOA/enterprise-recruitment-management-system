@@ -77,12 +77,12 @@
           <div class="col">
             <el-form-item label="最高学历" prop="highestEducation">
               <el-select v-model="form.highestEducation" placeholder="请选择">
-                <el-option label="本科" value="undergraduate"></el-option>
-                <el-option label="硕士" value="master"></el-option>
-                <el-option label="博士" value="doctor"></el-option>
-                <el-option label="大专" value="juniorCollege"></el-option>
-                <el-option label="高中" value="highSchool"></el-option>
-                <el-option label="其他" value="other"></el-option>
+                <el-option label="博士" :value="educationValue.DOCTOR"></el-option>
+                <el-option label="硕士" :value="educationValue.MASTER"></el-option>
+                <el-option label="本科" :value="educationValue.UNDERGRADUATE"></el-option>
+                <el-option label="大专" :value="educationValue.JUNIOR_COLLEGE"></el-option>
+                <el-option label="高中" :value="educationValue.HIGH_SCHOOL"></el-option>
+                <el-option label="其他" :value="educationValue.OTHER"></el-option>
               </el-select>
             </el-form-item>
           </div>
@@ -105,6 +105,7 @@
 </template>
 
 <script lang="ts">
+import { Education } from '@/common/constant';
 import store from '@/store';
 import { computed, defineComponent, ref } from "vue";
 import { checkPhone, checkEmail } from '../utils/form';
@@ -130,6 +131,7 @@ export default defineComponent({
         if (!val) ctx.emit("cancel");
       },
     });
+    const educationValue = ref(Education)
     const form = ref({
       resumeUrl: "",
       name: "",
@@ -178,6 +180,7 @@ export default defineComponent({
       visible,
       form,
       rules,
+      educationValue,
       formEl,
       uploadEl,
       isSubmiting,
