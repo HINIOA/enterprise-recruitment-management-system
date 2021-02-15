@@ -38,7 +38,9 @@
       <el-pagination
         background
         layout="prev, pager, next"
-        :page-count="page.count"
+        :page-size="page.size"
+        :total="page.total"
+        @update:current-page="handleCurPageUpdate"
       >
       </el-pagination>
     </div>
@@ -51,19 +53,6 @@ import { useRouter } from "vue-router";
 import Search from "../components/BaseSearch.vue";
 import { queryJobs } from "../api/jobs";
 
-async function getData(name?: string) {
-  const { data: jobs } = await queryJobs(null, { name });
-  const page = {
-    next: 2,
-    count: jobs.length / 16,
-  };
-
-  return {
-    jobs,
-    page,
-  };
-}
-
 export default defineComponent({
   name: "JobList",
   components: {
@@ -72,15 +61,23 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const jobList = ref([]);
-    const page = ref({});
+    const page = ref({
+      size: 10,
+      total: 0,
+      current: 1,
+    });
     const loading = ref(false);
 
-    const handleSearch = async (input: string) => {
+    const getDataAndSet = async (name?: string) => {
       loading.value = true;
-      const { jobs, page: __page } = await getData(input);
+      const { data, total } = await queryJobs(null, {
+        name,
+        current: page.value.current,
+        pageSize: page.value.size,
+      });
 
-      jobList.value = jobs;
-      page.value = __page;
+      jobList.value = data;
+      page.value.total = total;
       loading.value = false;
     };
 
@@ -88,20 +85,21 @@ export default defineComponent({
       router.push("/job-detail/" + jobId);
     };
 
-    onMounted(async () => {
-      loading.value = true;
-      const { jobs, page: __page } = await getData();
+    const handleSearch = async (input: string) => getDataAndSet(input);
 
-      jobList.value = jobs;
-      page.value = __page;
-      loading.value = false;
-    });
+    const handleCurPageUpdate = (current: number) => {
+      page.value.current = current;
+      getDataAndSet();
+    };
+
+    onMounted(async () => getDataAndSet());
 
     return {
       jobList,
       page,
       loading,
       handleSearch,
+      handleCurPageUpdate,
       toJobDetail,
     };
   },
