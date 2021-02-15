@@ -1,13 +1,5 @@
 import axios from "axios";
 
-interface Params {
-  id?: string;
-}
-
-interface Query {
-  name?: string;
-}
-
 async function queryJobs(params?: any, query?: any) {
   let api = "/api/job";
 

@@ -14,7 +14,7 @@
           class="job-list__item"
           v-for="job in jobList"
           :key="job.id"
-          @click="toJobDetail(job.id)"
+          @click="toJobDetail(job['_id'])"
         >
           <div class="job-list__item-container">
             <p class="job-list__item-name">{{ job.name }}</p>
@@ -24,7 +24,7 @@
             <div class="job-list__item-info--bottom">
               <p class="job-list__item-info--position">{{ job.location }}</p>
               <p class="job-list__item-info--time">
-                发布时间：{{ job.c_time.split("T")[0] }}
+                发布时间：{{ job.cTime.split("T")[0] }}
               </p>
             </div>
           </div>
