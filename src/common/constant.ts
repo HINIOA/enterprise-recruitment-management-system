@@ -8,6 +8,7 @@ export enum Link {
 }
 
 export enum Status {
+  WAIT_FOR_APPLY,
   WAIT_FOR_HR_FILTERED,
   WAIT_FOR_DEPARTMENT_FILTERED,
   WAIT_FOR_ARRANGE_INTERVIEW,
@@ -20,9 +21,14 @@ export enum Status {
   OBSOLETE,
 }
 
-export enum CandidateOperation {
+export enum Operations {
+  PASS,
+  OBSOLETE,
+  ARRANGE,
+  RESCHEDULE,
+  FINISH,
   AGREE,
-  CHANGE_THE_TIME,
+  REQUEST_RESCHEDULING,
   REJECT,
 }
 

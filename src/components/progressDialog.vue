@@ -24,19 +24,19 @@
       <div class="d-flex justify-content-center">
         <template v-if="operations && operations.length > -1">
           <el-button
-            @click="changeCandidateStatus(0)"
+            @click="changeCandidateStatus(Operations.AGREE)"
             class="col-sm"
             type="primary"
             >接受</el-button
           >
           <el-button
-            @click="changeCandidateStatus(1)"
+            @click="changeCandidateStatus(Operations.REQUEST_RESCHEDULING)"
             class="col-sm"
             type="warning"
             >时间不合适</el-button
           >
           <el-button
-            @click="changeCandidateStatus(2)"
+            @click="changeCandidateStatus(Operations.REJECT)"
             class="col-sm"
             type="danger"
             >拒绝</el-button
@@ -55,10 +55,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from "vue";
+import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 import store from "../store";
-import { CandidateOperation, Link, Status } from "../common/constant";
+import { Operations, Link, Status } from "../common/constant";
 import { getCandidate, changeStatus } from "../api/candidate";
 
 const STEPS = [
@@ -83,7 +83,7 @@ const getStepDesc = (status: Status, interviewTime?: string) => {
 export default defineComponent({
   props: ["modelValue", "time"],
   emit: ["update:modelValue"],
-  setup(props, ctx) {
+  setup(_, ctx) {
     const router = useRouter();
     const steps = ref(STEPS);
     const activeStep = ref<Link>(Link.NOT_APPLY);
@@ -93,13 +93,13 @@ export default defineComponent({
     // 获取进度、状态、操作
     const queryInfoAndSet = () =>
       getCandidate(store.getToken())
-        .then((data: any) => {
+        .then((data) => {
           const {
             currentLink,
             status,
             operations: resOperations,
             interviewTime,
-          } = data.candidate;
+          } = data;
 
           if (currentLink) {
             activeStep.value = currentLink;
@@ -128,8 +128,8 @@ export default defineComponent({
       if (activeStep.value === Link.NOT_APPLY) router.push("/jobs");
     };
 
-    const changeCandidateStatus = (operation: CandidateOperation) =>
-      changeStatus(store.getToken(), operation)
+    const changeCandidateStatus = (operations: Operations) =>
+      changeStatus(store.getToken(), operations)
         .then((data: any) => {
           if (data.success) queryInfoAndSet();
         })
@@ -144,6 +144,7 @@ export default defineComponent({
       steps,
       activeStep,
       operations,
+      Operations,
       clickConfirmHandler,
       changeCandidateStatus,
     };

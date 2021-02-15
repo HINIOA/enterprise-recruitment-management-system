@@ -1,4 +1,4 @@
-import { CandidateOperation } from "@/common/constant";
+import { Operations } from "@/common/constant";
 import axios from "axios";
 
 type Education =
@@ -60,7 +60,7 @@ export const getCandidate = async (token: string | null) => {
 
 export const changeStatus = async (
   token: string | null,
-  operation: CandidateOperation
+  operation: Operations
 ) => {
   const res = await axios.post("/api/candidate/change-status", {
     token,
