@@ -67,7 +67,7 @@ import store from "@/store";
 
 async function getJobData(id: string | string[]) {
   const { job } = await queryJobs({ id });
-  const { name, types, location, c_time: time, desc } = job;
+  const { name, types, location, cTime: time, description: desc } = job;
 
   return {
     info: {

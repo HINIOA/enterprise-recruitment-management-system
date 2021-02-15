@@ -20,7 +20,7 @@
             <el-col v-for="item in row" :key="item" :span="8">
               <div class="jobs__item">
                 <router-link
-                  :to="/job-detail/ + item.id"
+                  :to="/job-detail/ + item['_id']"
                   class="jobs__item-link"
                 >
                   <p class="jobs__item-name">{{ item.name }}</p>
