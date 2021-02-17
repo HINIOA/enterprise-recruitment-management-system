@@ -36,7 +36,7 @@
       </div>
     </el-footer>
     <login-dialog v-model="loginDialogVisible" />
-    <progress-dialog v-if="commonState.token" v-model="progressDialogVisible" :time="Date.now()" />
+    <progress-dialog v-if="commonState.token" v-model="progressDialogVisible"/>
   </el-container>
 </template>
 

@@ -55,7 +55,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import store from "../store";
 import { Operations, Link, Status } from "../common/constant";
@@ -81,25 +81,25 @@ const getStepDesc = (status: Status, interviewTime?: string) => {
 };
 
 export default defineComponent({
-  props: ["modelValue", "time"],
+  props: ["modelValue"],
   emit: ["update:modelValue"],
-  setup(_, ctx) {
+  setup(props, ctx) {
     const router = useRouter();
     const steps = ref(STEPS);
     const activeStep = ref<Link>(Link.NOT_APPLY);
     const operations = ref([]);
 
-    //#region 时间处理程序
     // 获取进度、状态、操作
     const queryInfoAndSet = () =>
       getCandidate(store.getToken())
         .then((data) => {
+          const { success, candidate } = data
           const {
             currentLink,
             status,
             operations: resOperations,
             interviewTime,
-          } = data;
+          } = candidate;
 
           if (currentLink) {
             activeStep.value = currentLink;
@@ -123,6 +123,8 @@ export default defineComponent({
           store.setToken("");
         });
 
+    //#region 事件处理程序
+
     const clickConfirmHandler = () => {
       ctx.emit("update:modelValue", false);
       if (activeStep.value === Link.NOT_APPLY) router.push("/jobs");
@@ -136,7 +138,12 @@ export default defineComponent({
         .catch(() => {
           store.setToken("");
         });
+
     //#endregion
+
+    watch(() => props.modelValue, (_, newValue) => {
+      if (!newValue) queryInfoAndSet();
+    });
 
     queryInfoAndSet();
 
