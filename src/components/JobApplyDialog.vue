@@ -106,7 +106,7 @@
 
 <script lang="ts">
 import { Education } from '@/common/constant';
-import store from '@/store';
+import store from '@/common/store';
 import { computed, defineComponent, ref } from "vue";
 import { checkPhone, checkEmail } from '../utils/form';
 

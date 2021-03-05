@@ -57,7 +57,7 @@
 <script lang="ts">
 import { defineComponent, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import store from "../store";
+import store from "../common/store";
 import { Operations, Link, Status } from "../common/constant";
 import { getCandidate, changeStatus } from "../api/candidate";
 

@@ -63,7 +63,7 @@ import JobApplyDialog from "@/components/JobApplyDialog.vue";
 import { useRoute } from "vue-router";
 import { queryJobs } from "@/api/jobs";
 import { applyJob } from "../api/candidate";
-import store from "@/store";
+import store from "@/common/store";
 
 async function getJobData(id: string | string[]) {
   const { job } = await queryJobs({ id });
