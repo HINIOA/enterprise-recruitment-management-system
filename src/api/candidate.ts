@@ -23,9 +23,13 @@ interface RequestBody {
   highestEducation?: Education;
 }
 
-export const login = async (loginForm: any) => {
-  const res = await axios.post("/api/candidate/login", loginForm);
+export const signIn = async (form: any) => {
+  const res = await axios.post("/api/candidate/signin", form);
+  return res.data;
+};
 
+export const login = async (form: any) => {
+  const res = await axios.post("/api/candidate/login", form);
   return res.data;
 };
 

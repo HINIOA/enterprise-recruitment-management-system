@@ -1,53 +1,56 @@
 <template>
   <el-dialog
-    title="登录"
+    :title="isLogin ? '登录' : '注册'"
     :model-value="modelValue"
     @update:model-value="(value) => $emit('update:modelValue', value)"
     width="400px"
     top="34vh"
   >
-    <el-form :model="loginForm" :rules="loginRules" ref="loginFormRef">
-      <el-form-item prop="phone">
-        <el-input v-model.number="loginForm.phone" placeholder="手机号码">
-          <template #prepend>+86</template>
+    <el-form :model="form" :rules="loginRules" ref="formRef">
+      <el-form-item prop="phone" :error="phoneError">
+        <el-input
+          v-model.number="form.phone"
+          placeholder="请输入手机号码"
+          prefix-icon="el-icon-mobile-phone"
+        >
         </el-input>
       </el-form-item>
-      <el-form-item prop="code" :error="codeError">
-        <el-input v-model.number="loginForm.code" placeholder="验证码">
-          <template #append>
-            <el-link type="primary" :underline="false">获取验证码</el-link>
-          </template>
+      <el-form-item prop="password" :error="passwordError">
+        <el-input
+          v-model="form.password"
+          placeholder="请输入密码"
+          show-password
+          prefix-icon="el-icon-lock"
+        >
         </el-input>
       </el-form-item>
-    </el-form>
-    <template #footer>
-      <span class="dialog-footer">
+      <el-form-item>
         <el-button
           type="primary"
-          @click="loginHandler"
+          @click="submitHandler"
           :style="{ width: '100%' }"
         >
-          登 录
+          {{ isLogin ? "登 录" : "注 册" }}
         </el-button>
-      </span>
-    </template>
+      </el-form-item>
+    </el-form>
   </el-dialog>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, watch } from "vue";
 import { checkPhone } from "../utils/form";
-import { login } from "../api/candidate";
-import store from "../store";
+import { signIn, login } from "../api/candidate";
+import store from "../common/store";
 
 export default defineComponent({
-  props: ["modelValue"],
+  props: ["modelValue", "isLogin"],
   emit: ["update:modelValue", "success"],
-  setup(_, ctx) {
-    const loginFormRef = ref(null);
-    const loginForm = ref({
+  setup(props, ctx) {
+    const formRef = ref(null);
+    const form = ref({
       phone: "",
-      code: "",
+      password: "",
     });
     const loginRules = ref({
       phone: [
@@ -58,43 +61,58 @@ export default defineComponent({
           trigger: "blur",
         },
       ],
-      code: [
+      password: [
         {
           required: true,
-          message: "请输入收到的验证码",
+          message: "请输入密码",
           trigger: "blur",
         },
       ],
     });
-    const codeError = ref("");
+    const phoneError = ref("");
+    const passwordError = ref("");
 
-    const loginHandler = () => {
-      (loginFormRef.value! as {
+    const submitHandler = () => {
+      (formRef.value! as {
         validate(cb: (valid: boolean) => void): void;
       }).validate((valid: boolean) => {
         if (valid) {
-          login(loginForm.value).then((data) => {
-            const { success, token, validTime, isApplied } = data;
+          if (props.isLogin) {
+            login(form.value).then((data) => {
+              const { success, code, token, validTime, isApplied } = data;
 
-            if (success) {
-              store.setToken(token, validTime);
-              store.setPhone(loginForm.value.phone);
-              store.setIsApplied(isApplied);
-              ctx.emit("update:modelValue", false);
-            } else {
-              codeError.value = "验证码错误";
-            }
-          });
+              if (success) {
+                store.setToken(token, validTime);
+                store.setPhone(form.value.phone);
+                store.setIsApplied(isApplied);
+                ctx.emit("update:modelValue", false);
+              } else {
+                if (code === 1) phoneError.value = "手机号未注册";
+                else passwordError.value = "密码错误";
+              }
+            });
+          } else {
+            signIn(form.value).then((data) => {
+              const { success } = data;
+
+              if (success) {
+                ctx.emit("update:modelValue", false);
+              } else {
+                phoneError.value = "手机号已注册，请直接登录";
+              }
+            });
+          }
         }
       });
     };
 
     return {
-      loginFormRef,
-      loginForm,
+      formRef,
+      form,
       loginRules,
-      codeError,
-      loginHandler,
+      phoneError,
+      passwordError,
+      submitHandler,
     };
   },
 });
