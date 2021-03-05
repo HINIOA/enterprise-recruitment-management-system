@@ -22,8 +22,24 @@
           </el-menu-item>
         </el-menu>
         <!-- 用户 -->
-        <div class="user" @click="clickUserHandler">
-          {{ commonState.token ? "应聘进度" : "登录" }}
+        <div class="user">
+          <p v-if="commonState.token" @click="progressDialogVisible = true">
+            应聘进度
+          </p>
+          <template v-else>
+            <el-link
+              type="info"
+              :underline="false"
+              @click.prevent="clickLogOrSignHander(true)"
+              >登录</el-link
+            >｜
+            <el-link
+              type="info"
+              :underline="false"
+              @click.prevent="clickLogOrSignHander(false)"
+              >注册</el-link
+            >
+          </template>
         </div>
       </div>
     </el-header>
@@ -35,8 +51,8 @@
         <a href="#" class="author-text">Coded by <strong>Xinyao Qiu</strong></a>
       </div>
     </el-footer>
-    <login-dialog v-model="loginDialogVisible" />
-    <progress-dialog v-if="commonState.token" v-model="progressDialogVisible"/>
+    <login-dialog v-model="loginDialogVisible" :is-login="isLogin" />
+    <progress-dialog v-if="commonState.token" v-model="progressDialogVisible" />
   </el-container>
 </template>
 
@@ -45,7 +61,7 @@ import { defineComponent, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import loginDialog from "./components/LoginDialog.vue";
 import progressDialog from "./components/progressDialog.vue";
-import store from "./store";
+import store from "./common/store";
 
 export default defineComponent({
   components: {
@@ -57,6 +73,7 @@ export default defineComponent({
     const route = useRoute();
     const commonState = store.state;
     const activeIndex = ref("home");
+    const isLogin = ref<boolean>(false)
     const loginDialogVisible = ref<boolean>(false);
     const progressDialogVisible = ref<boolean>(false);
 
@@ -64,12 +81,9 @@ export default defineComponent({
       router.push({ name: index });
     };
 
-    const clickUserHandler = () => {
-      if (commonState.token) {
-        progressDialogVisible.value = true;
-      } else {
-        loginDialogVisible.value = true;
-      }
+    const clickLogOrSignHander = (login: boolean) => {
+      isLogin.value = login
+      loginDialogVisible.value = true;
     };
 
     watch(
@@ -83,7 +97,8 @@ export default defineComponent({
     return {
       activeIndex,
       navClickHandler,
-      clickUserHandler,
+      clickLogOrSignHander,
+      isLogin,
       loginDialogVisible,
       progressDialogVisible,
       commonState,
@@ -129,9 +144,14 @@ export default defineComponent({
 }
 
 .user {
+  display: flex;
   cursor: pointer;
   color: #909399;
   font-size: 1rem;
+
+  p {
+    margin: 0;
+  }
 }
 
 .el-menu {
