@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    title="进度"
+    title="当前进度"
     :model-value="modelValue"
     @update:model-value="(value) => $emit('update:modelValue', value)"
     top="34vh"
