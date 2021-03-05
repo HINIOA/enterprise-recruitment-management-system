@@ -7,20 +7,9 @@
         {{ Array.isArray(jobInfo.types) ? jobInfo.types.join("｜") : "" }}
       </p>
       <p class="job-detail__location">{{ jobInfo.location }}</p>
-      <el-tooltip
-        :disabled="allowApply"
-        class="item"
-        effect="dark"
-        :content="commonState.isApplied ? '您的剩余投递次数为 0' : '请先登录'"
-        placement="top"
+      <el-button type="primary" size="medium" @click="clickApplyHander"
+        >申请职位</el-button
       >
-        <el-button
-          type="primary"
-          size="medium"
-          @click="dialogVisible = allowApply ? true : false"
-          >申请职位</el-button
-        >
-      </el-tooltip>
     </div>
     <div class="job-detail__main">
       <div class="job-detail__desc-title">
@@ -32,19 +21,7 @@
       </p>
     </div>
     <div class="job-detail__footer">
-      <el-tooltip
-        :disabled="allowApply"
-        class="item"
-        effect="dark"
-        :content="commonState.isApplied ? '您的剩余投递次数为 0' : '请先登录'"
-        placement="top"
-      >
-        <el-button
-          type="primary"
-          @click="dialogVisible = allowApply ? true : false"
-          >申请职位</el-button
-        >
-      </el-tooltip>
+      <el-button type="primary" @click="clickApplyHander">申请职位</el-button>
     </div>
   </el-card>
   <job-apply-dialog
@@ -107,9 +84,19 @@ export default defineComponent({
       value.job = jobInfo.value.name;
       value.token = commonState.value.token;
       applyJob(value).then((res: any) => {
-        if (res.data.success) store.setIsApplied(true)
+        if (res.data.success) store.setIsApplied(true);
         ElMessage.success("提交成功");
       });
+    };
+
+    const clickApplyHander = () => {
+      if (commonState.value.token) {
+        if (commonState.value.isApplied)
+          ElMessage.error("您的剩余投递次数为 0");
+        else dialogVisible.value = true;
+      } else {
+        ElMessage.error("请先登录");
+      }
     };
 
     onMounted(async () => {
@@ -126,6 +113,7 @@ export default defineComponent({
       dialogVisible,
       allowApply,
       submitForm,
+      clickApplyHander,
     };
   },
 });
