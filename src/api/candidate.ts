@@ -1,4 +1,5 @@
 import { Operations } from "@/common/constant";
+import store from "@/common/store";
 import axios from "axios";
 
 type Education =
@@ -30,6 +31,15 @@ export const signIn = async (form: any) => {
 
 export const login = async (form: any) => {
   const res = await axios.post("/api/candidate/login", form);
+  return res.data;
+};
+
+export const modifyPassword = async (form: any) => {
+  const token = store.getToken();
+  const res = await axios.post("/api/candidate/modify-password", {
+    token,
+    ...form,
+  });
   return res.data;
 };
 

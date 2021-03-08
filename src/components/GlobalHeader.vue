@@ -1,86 +1,83 @@
 <template>
-  <el-container>
-    <el-header class="app-header">
-      <div class="app-header__container">
-        <!-- Logo -->
-        <div class="logo-container">
-          <a href="#" class="logo-link">
-            <img src="../assets/logo.png" alt="logo" class="logo-image" />
-          </a>
-        </div>
-        <!-- 导航 -->
-        <el-menu
-          :default-active="activeNavIndex"
-          @select="navClickHandler"
-          mode="horizontal"
-        >
-          <el-menu-item index="home">
-            首页
-          </el-menu-item>
-          <el-menu-item index="jobList">
-            所有职位
-          </el-menu-item>
-        </el-menu>
-        <!-- 用户 -->
-        <div class="user">
-          <el-dropdown v-if="commonState.token">
-            <span>
-              我的<i class="el-icon-arrow-down el-icon--right"></i>
-            </span>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item @click="progressDialogVisible = true"
-                  >应聘进度</el-dropdown-item>
-                <el-dropdown-item>修改密码</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-
-          <template v-else>
-            <el-link
-              type="info"
-              :underline="false"
-              @click.prevent="clickLogOrSignHander(true)"
-              >登录</el-link
-            >｜
-            <el-link
-              type="info"
-              :underline="false"
-              @click.prevent="clickLogOrSignHander(false)"
-              >注册</el-link
-            >
-          </template>
-        </div>
+  <el-header class="app-header">
+    <div class="app-header__container">
+      <!-- Logo -->
+      <div class="logo-container">
+        <a href="#" class="logo-link">
+          <img src="../assets/logo.png" alt="logo" class="logo-image" />
+        </a>
       </div>
-    </el-header>
-    <login-dialog v-model="loginDialogVisible" :is-login="isLogin" />
-    <progress-dialog v-if="commonState.token" v-model="progressDialogVisible" />
-  </el-container>
+      <!-- 导航 -->
+      <el-menu
+        :default-active="activeNavIndex"
+        @select="navClickHandler"
+        mode="horizontal"
+      >
+        <el-menu-item index="home">
+          首页
+        </el-menu-item>
+        <el-menu-item index="jobList">
+          所有职位
+        </el-menu-item>
+      </el-menu>
+      <!-- 用户 -->
+      <div class="user">
+        <el-dropdown v-if="commonState.token">
+          <span> 我的<i class="el-icon-arrow-down el-icon--right"></i> </span>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item @click="progressDialogVisible = true"
+                >应聘进度</el-dropdown-item
+              >
+              <el-dropdown-item @click="modifyPasswordDialogVisible = true">修改密码</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+        <template v-else>
+          <el-link
+            type="info"
+            :underline="false"
+            @click.prevent="clickLogOrSignHander(true)"
+            >登录</el-link
+          >｜
+          <el-link
+            type="info"
+            :underline="false"
+            @click.prevent="clickLogOrSignHander(false)"
+            >注册</el-link
+          >
+        </template>
+      </div>
+    </div>
+  </el-header>
+  <login-dialog v-model="loginDialogVisible" :is-login="isLogin" />
+  <progress-dialog v-if="commonState.token" v-model="progressDialogVisible" />
+  <modify-password-dialog v-model="modifyPasswordDialogVisible"/>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import loginDialog from "./LoginDialog.vue";
-import progressDialog from "./progressDialog.vue";
+import progressDialog from "./ProgressDialog.vue";
+import modifyPasswordDialog from "./ModifyPasswordDialog.vue";
 import store from "../common/store";
 
 export default defineComponent({
   components: {
     progressDialog,
     loginDialog,
+    modifyPasswordDialog,
   },
-  props: [
-    'activeNavIndex',
-    'clickNav',
-  ],
+  props: ["activeNavIndex", "clickNav"],
   setup(_, ctx) {
     const commonState = store.state;
     const isLogin = ref<boolean>(false);
     const loginDialogVisible = ref<boolean>(false);
     const progressDialogVisible = ref<boolean>(false);
+    const modifyPasswordDialogVisible = ref<boolean>(false);
 
     const navClickHandler = (index: string) => {
-      ctx.emit('clickNav', index)
+      ctx.emit("clickNav", index);
     };
 
     const clickLogOrSignHander = (login: boolean) => {
@@ -89,12 +86,13 @@ export default defineComponent({
     };
 
     return {
+      isLogin,
+      commonState,
       navClickHandler,
       clickLogOrSignHander,
-      isLogin,
       loginDialogVisible,
       progressDialogVisible,
-      commonState,
+      modifyPasswordDialogVisible,
     };
   },
 });

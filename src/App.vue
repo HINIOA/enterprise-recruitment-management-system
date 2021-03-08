@@ -16,7 +16,6 @@
 import { defineComponent, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import globalHeader from "./components/GlobalHeader.vue";
-import store from "./common/store";
 
 export default defineComponent({
   components: {
@@ -25,19 +24,10 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const route = useRoute();
-    const commonState = store.state;
     const activeNavIndex = ref("home");
-    const isLogin = ref<boolean>(false);
-    const loginDialogVisible = ref<boolean>(false);
-    const progressDialogVisible = ref<boolean>(false);
 
     const navClickHandler = (index: string) => {
       router.push({ name: index });
-    };
-
-    const clickLogOrSignHander = (login: boolean) => {
-      isLogin.value = login;
-      loginDialogVisible.value = true;
     };
 
     watch(
@@ -51,11 +41,6 @@ export default defineComponent({
     return {
       activeNavIndex,
       navClickHandler,
-      clickLogOrSignHander,
-      isLogin,
-      loginDialogVisible,
-      progressDialogVisible,
-      commonState,
     };
   },
 });
