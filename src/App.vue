@@ -1,48 +1,6 @@
 <template>
   <el-container>
-    <el-header class="app-header">
-      <div class="app-header__container">
-        <!-- Logo -->
-        <div class="logo-container">
-          <a href="#" class="logo-link">
-            <img src="./assets/logo.png" alt="logo" class="logo-image" />
-          </a>
-        </div>
-        <!-- 导航 -->
-        <el-menu
-          :default-active="activeIndex"
-          @select="navClickHandler"
-          mode="horizontal"
-        >
-          <el-menu-item index="home">
-            首页
-          </el-menu-item>
-          <el-menu-item index="jobList">
-            所有职位
-          </el-menu-item>
-        </el-menu>
-        <!-- 用户 -->
-        <div class="user">
-          <p v-if="commonState.token" @click="progressDialogVisible = true">
-            应聘进度
-          </p>
-          <template v-else>
-            <el-link
-              type="info"
-              :underline="false"
-              @click.prevent="clickLogOrSignHander(true)"
-              >登录</el-link
-            >｜
-            <el-link
-              type="info"
-              :underline="false"
-              @click.prevent="clickLogOrSignHander(false)"
-              >注册</el-link
-            >
-          </template>
-        </div>
-      </div>
-    </el-header>
+    <global-header :activeNavIndex="activeNavIndex" @clickNav="navClickHandler"/>
     <el-main>
       <router-view />
     </el-main>
@@ -51,29 +9,25 @@
         <a href="#" class="author-text">Coded by <strong>Xinyao Qiu</strong></a>
       </div>
     </el-footer>
-    <login-dialog v-model="loginDialogVisible" :is-login="isLogin" />
-    <progress-dialog v-if="commonState.token" v-model="progressDialogVisible" />
   </el-container>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import loginDialog from "./components/LoginDialog.vue";
-import progressDialog from "./components/progressDialog.vue";
+import globalHeader from "./components/GlobalHeader.vue";
 import store from "./common/store";
 
 export default defineComponent({
   components: {
-    progressDialog,
-    loginDialog,
+    globalHeader,
   },
   setup() {
     const router = useRouter();
     const route = useRoute();
     const commonState = store.state;
-    const activeIndex = ref("home");
-    const isLogin = ref<boolean>(false)
+    const activeNavIndex = ref("home");
+    const isLogin = ref<boolean>(false);
     const loginDialogVisible = ref<boolean>(false);
     const progressDialogVisible = ref<boolean>(false);
 
@@ -82,7 +36,7 @@ export default defineComponent({
     };
 
     const clickLogOrSignHander = (login: boolean) => {
-      isLogin.value = login
+      isLogin.value = login;
       loginDialogVisible.value = true;
     };
 
@@ -90,12 +44,12 @@ export default defineComponent({
       () => route.name,
       (routeName) => {
         if (typeof routeName === "string")
-          activeIndex.value = routeName === "jobDetail" ? "jobList" : routeName;
+          activeNavIndex.value = routeName === "jobDetail" ? "jobList" : routeName;
       }
     );
 
     return {
-      activeIndex,
+      activeNavIndex,
       navClickHandler,
       clickLogOrSignHander,
       isLogin,
@@ -108,56 +62,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.app-header {
-  border-bottom: 1px solid #e6e6e6;
-
-  &__container {
-    width: 100vw;
-    max-width: 75rem;
-    display: flex;
-    align-items: center;
-    margin: 0 auto;
-  }
-}
-
-.el-header {
-  padding: 0 !important;
-}
-
-.logo {
-  &-container {
-    display: flex;
-    align-items: center;
-    box-sizing: border-box;
-    padding-left: 2rem;
-    padding-right: 4rem;
-  }
-
-  &-link {
-    display: flex;
-  }
-
-  &-image {
-    height: 3rem;
-    min-width: 3rem;
-  }
-}
-
-.user {
-  display: flex;
-  cursor: pointer;
-  color: #909399;
-  font-size: 1rem;
-
-  p {
-    margin: 0;
-  }
-}
-
-.el-menu {
-  flex: 1;
-}
-
 .el-main {
   padding: 0 !important;
 }
